@@ -51,37 +51,40 @@
     </div>
   </div>
 
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand__mark">РЖ</span>
-      <div class="brand__copy">
-        <span class="brand__title">Russisch Vokabel-App Deluxe</span>
-        <span class="brand__subtitle">Lernen mit Stil</span>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand__mark">РЖ</span>
+        <div class="brand__copy">
+          <span class="brand__title">Russisch Vokabel-App Deluxe</span>
+          <span class="brand__subtitle">Lernen mit Stil</span>
+        </div>
       </div>
-    </div>
-    <div class="header-actions">
-      <button id="btn-theme" class="ghost" aria-label="Theme wechseln">
-        <svg class="icon"><use href="#icon-palette"></use></svg>
-      </button>
-      <button id="btn-audio" class="ghost" aria-label="Soundeffekte umschalten">
-        <svg class="icon"><use id="icon-audio-use" href="#icon-audio"></use></svg>
-      </button>
-      <button id="btn-install" class="primary" aria-label="App installieren">
-        <svg class="icon"><use href="#icon-install"></use></svg>
-        <span>Installieren</span>
-      </button>
-    </div>
-  </header>
+      <div class="header-actions">
+        <button id="btn-theme" class="ghost" aria-label="Theme wechseln">
+          <svg class="icon"><use href="#icon-palette"></use></svg>
+          <span class="btn-label">Theme</span>
+        </button>
+        <button id="btn-audio" class="ghost" aria-label="Soundeffekte umschalten">
+          <svg class="icon"><use id="icon-audio-use" href="#icon-audio"></use></svg>
+          <span class="btn-label">Audio</span>
+        </button>
+        <button id="btn-install" class="primary" aria-label="App installieren">
+          <svg class="icon"><use href="#icon-install"></use></svg>
+          <span class="btn-label">Installieren</span>
+        </button>
+      </div>
+    </header>
 
-  <nav class="tabs" role="tablist" aria-label="Hauptnavigation">
-    <button class="tab active" data-tab="learn" role="tab" aria-selected="true">Lernen</button>
-    <button class="tab" data-tab="alphabet" role="tab" aria-selected="false">Alphabet</button>
-    <button class="tab" data-tab="practice" role="tab" aria-selected="false">Üben</button>
-    <button class="tab" data-tab="stats" role="tab" aria-selected="false">Statistik</button>
-    <button class="tab" data-tab="settings" role="tab" aria-selected="false">Einstellungen</button>
-  </nav>
+    <nav class="tabs" role="tablist" aria-label="Hauptnavigation">
+      <button class="tab active" data-tab="learn" role="tab" aria-selected="true">Lernen</button>
+      <button class="tab" data-tab="alphabet" role="tab" aria-selected="false">Alphabet</button>
+      <button class="tab" data-tab="practice" role="tab" aria-selected="false">Üben</button>
+      <button class="tab" data-tab="stats" role="tab" aria-selected="false">Statistik</button>
+      <button class="tab" data-tab="settings" role="tab" aria-selected="false">Einstellungen</button>
+    </nav>
 
-  <main>
+    <main>
     <section id="learn" class="panel visible">
       <div class="toolbar">
         <select id="category-select"></select>
@@ -193,12 +196,13 @@
         <button id="btn-reset" class="danger">Alle Daten löschen</button>
       </div>
     </section>
-  </main>
+    </main>
 
-  <footer class="app-footer">
-    <span>© 2025 Vokabel-App Deluxe</span>
-    <span id="version">v1.0.0</span>
-  </footer>
+    <footer class="app-footer">
+      <span>© 2025 Vokabel-App Deluxe</span>
+      <span id="version">v1.0.0</span>
+    </footer>
+  </div>
 
   <script src="app.js"></script>
 </body>
