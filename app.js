@@ -1,8 +1,277 @@
-/* Vokabel-App Deluxe (vanilla JS, keine externen Libs) */
-const $ = (sel, el=document) => el.querySelector(sel);
-const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+/* Russisch Vokabel-App Deluxe – moderne Landingpage, Themes & optionale Imports */
+const THEMES = {
+  midnight: {
+    label: 'Midnight Aurora',
+    description: 'Nordische Nacht, Schimmer der Polarlichter',
+    tone: 'dark',
+    preview: 'linear-gradient(135deg, #09153c 0%, #1a3f6d 55%, #0b0f24 100%)',
+    overlay: 'linear-gradient(160deg, rgba(11,21,50,0.1), rgba(0,0,0,0.45))',
+    vars: {
+      '--bg': '#060919',
+      '--bg-grad': 'radial-gradient(circle at 15% 20%, rgba(120,160,255,0.38), transparent 55%), radial-gradient(circle at 85% 10%, rgba(177,103,255,0.32), transparent 60%), #040715',
+      '--bg-texture': 'radial-gradient(circle, rgba(80,120,255,0.14) 0%, transparent 55%)',
+      '--fg': '#f4f7ff',
+      '--muted': '#9da8d0',
+      '--primary': '#7f9aff',
+      '--primary-2': '#98b3ff',
+      '--danger': '#ff6c80',
+      '--card': 'rgba(9,14,32,0.85)',
+      '--card-border': 'rgba(127,154,255,0.35)',
+      '--border': 'rgba(255,255,255,0.08)',
+      '--accent': '#b38cff',
+      '--glass': 'rgba(7,11,26,0.7)',
+      '--shadow': '0 24px 50px rgba(3,7,22,0.55)'
+    }
+  },
+  imperial: {
+    label: 'Imperial Ballroom',
+    description: 'Goldene Details, klassisches St. Petersburg',
+    tone: 'light',
+    preview: 'linear-gradient(135deg, #f6e7d3 0%, #d7b06a 55%, #a0742a 100%)',
+    overlay: 'linear-gradient(140deg, rgba(168,118,50,0.25), rgba(255,255,255,0.3))',
+    vars: {
+      '--bg': '#f3e9db',
+      '--bg-grad': 'radial-gradient(circle at 20% 15%, rgba(255,214,153,0.5), transparent 58%), radial-gradient(circle at 80% 0%, rgba(197,163,107,0.4), transparent 60%), #f6ede0',
+      '--bg-texture': 'radial-gradient(circle, rgba(255,213,133,0.16) 0%, transparent 55%)',
+      '--fg': '#362816',
+      '--muted': '#7a6143',
+      '--primary': '#a76a2c',
+      '--primary-2': '#c88942',
+      '--danger': '#c64545',
+      '--card': 'rgba(255,253,248,0.85)',
+      '--card-border': 'rgba(210,160,90,0.45)',
+      '--border': 'rgba(152,111,63,0.25)',
+      '--accent': '#d19b51',
+      '--glass': 'rgba(255,249,240,0.72)',
+      '--shadow': '0 22px 48px rgba(128,92,46,0.25)'
+    }
+  },
+  birch: {
+    label: 'Birkenwald',
+    description: 'Frische Morgenluft & russische Natur',
+    tone: 'light',
+    preview: 'linear-gradient(140deg, #0f5b4c 0%, #4fa37e 60%, #c8f3d4 100%)',
+    overlay: 'linear-gradient(160deg, rgba(14,63,54,0.2), rgba(255,255,255,0.2))',
+    vars: {
+      '--bg': '#0f2f2a',
+      '--bg-grad': 'radial-gradient(circle at 80% 10%, rgba(110,200,160,0.4), transparent 55%), radial-gradient(circle at 15% 90%, rgba(60,180,150,0.35), transparent 58%), #0c221f',
+      '--bg-texture': 'radial-gradient(circle, rgba(200,255,220,0.1) 0%, transparent 60%)',
+      '--fg': '#f4fff5',
+      '--muted': '#9bc5b2',
+      '--primary': '#4fba9c',
+      '--primary-2': '#74d5b7',
+      '--danger': '#f46d6d',
+      '--card': 'rgba(10,32,28,0.82)',
+      '--card-border': 'rgba(120,210,170,0.35)',
+      '--border': 'rgba(140,200,170,0.28)',
+      '--accent': '#8be5c5',
+      '--glass': 'rgba(12,36,30,0.68)',
+      '--shadow': '0 26px 52px rgba(2,22,18,0.48)'
+    }
+  },
+  velvet: {
+    label: 'Velvet Theatre',
+    description: 'Burgunder Vorhänge & warme Kerzen',
+    tone: 'dark',
+    preview: 'linear-gradient(135deg, #3d0f1d 0%, #742235 50%, #19060d 100%)',
+    overlay: 'linear-gradient(160deg, rgba(125,41,64,0.35), rgba(0,0,0,0.55))',
+    vars: {
+      '--bg': '#16050c',
+      '--bg-grad': 'radial-gradient(circle at 75% 10%, rgba(198,88,120,0.45), transparent 58%), radial-gradient(circle at 10% 80%, rgba(90,26,44,0.4), transparent 60%), #0f0308',
+      '--bg-texture': 'radial-gradient(circle, rgba(255,214,214,0.08) 0%, transparent 60%)',
+      '--fg': '#fbe9f0',
+      '--muted': '#c49aa8',
+      '--primary': '#d66280',
+      '--primary-2': '#f07ea0',
+      '--danger': '#f76a6a',
+      '--card': 'rgba(40,10,22,0.85)',
+      '--card-border': 'rgba(214,98,128,0.4)',
+      '--border': 'rgba(214,98,128,0.25)',
+      '--accent': '#ff9dbd',
+      '--glass': 'rgba(36,8,20,0.72)',
+      '--shadow': '0 28px 54px rgba(39,7,17,0.55)'
+    }
+  },
+  sunset: {
+    label: 'Sunset Steppe',
+    description: 'Weite Horizonte & warme Pastelltöne',
+    tone: 'light',
+    preview: 'linear-gradient(135deg, #ffb47d 0%, #ff6f91 45%, #1f1c47 100%)',
+    overlay: 'linear-gradient(180deg, rgba(255,119,93,0.3), rgba(18,13,46,0.6))',
+    vars: {
+      '--bg': '#1e1635',
+      '--bg-grad': 'radial-gradient(circle at 20% 10%, rgba(255,196,120,0.55), transparent 55%), radial-gradient(circle at 80% 0%, rgba(206,98,171,0.45), transparent 60%), #1a1531',
+      '--bg-texture': 'radial-gradient(circle, rgba(255,200,150,0.12) 0%, transparent 60%)',
+      '--fg': '#fff4f2',
+      '--muted': '#e2b5ad',
+      '--primary': '#ff7c8d',
+      '--primary-2': '#ff9fa7',
+      '--danger': '#ff5c72',
+      '--card': 'rgba(34,20,54,0.85)',
+      '--card-border': 'rgba(255,140,160,0.35)',
+      '--border': 'rgba(255,158,180,0.22)',
+      '--accent': '#ffd1a1',
+      '--glass': 'rgba(30,20,53,0.7)',
+      '--shadow': '0 26px 52px rgba(12,9,26,0.55)'
+    }
+  },
+  midnightSun: {
+    label: 'Midnight Sun',
+    description: 'Nordisches Licht zwischen Tag und Nacht',
+    tone: 'dark',
+    preview: 'linear-gradient(135deg, #17375e 0%, #2f6c88 45%, #f2c86a 100%)',
+    overlay: 'linear-gradient(160deg, rgba(16,48,88,0.35), rgba(255,206,122,0.4))',
+    vars: {
+      '--bg': '#102132',
+      '--bg-grad': 'radial-gradient(circle at 15% 20%, rgba(118,180,255,0.45), transparent 58%), radial-gradient(circle at 75% 10%, rgba(255,207,116,0.4), transparent 60%), #0b1829',
+      '--bg-texture': 'radial-gradient(circle, rgba(255,233,170,0.12) 0%, transparent 60%)',
+      '--fg': '#f3fbff',
+      '--muted': '#a2bed4',
+      '--primary': '#6bc4ff',
+      '--primary-2': '#8cd8ff',
+      '--danger': '#ff7a7a',
+      '--card': 'rgba(12,31,52,0.82)',
+      '--card-border': 'rgba(107,196,255,0.38)',
+      '--border': 'rgba(255,255,255,0.12)',
+      '--accent': '#ffd07a',
+      '--glass': 'rgba(11,26,42,0.7)',
+      '--shadow': '0 24px 50px rgba(8,22,38,0.55)'
+    }
+  }
+};
+
+const GRADE_INFO = {
+  beginner: {
+    label: 'Anfänger',
+    description: 'Grundlagen, Zahlen und erste Gespräche'
+  },
+  intermediate: {
+    label: 'Fortgeschritten',
+    description: 'Reisen, Stadtleben und Gefühle beschreiben'
+  },
+  advanced: {
+    label: 'Meisterklasse',
+    description: 'Kultur, Politik und anspruchsvokabular'
+  }
+};
+
+const BUILT_IN_WORDS = {
+  beginner: [
+    { id: 'beg-001', cat: 'Begrüßung', ru: 'привет', de: 'hallo' },
+    { id: 'beg-002', cat: 'Begrüßung', ru: 'здравствуйте', de: 'guten Tag' },
+    { id: 'beg-003', cat: 'Begrüßung', ru: 'доброе утро', de: 'Guten Morgen' },
+    { id: 'beg-004', cat: 'Begrüßung', ru: 'добрый вечер', de: 'Guten Abend' },
+    { id: 'beg-005', cat: 'Höflichkeit', ru: 'пожалуйста', de: 'bitte' },
+    { id: 'beg-006', cat: 'Höflichkeit', ru: 'спасибо', de: 'danke' },
+    { id: 'beg-007', cat: 'Höflichkeit', ru: 'извините', de: 'entschuldigen Sie' },
+    { id: 'beg-008', cat: 'Alltag', ru: 'да', de: 'ja' },
+    { id: 'beg-009', cat: 'Alltag', ru: 'нет', de: 'nein' },
+    { id: 'beg-010', cat: 'Alltag', ru: 'дом', de: 'Haus' },
+    { id: 'beg-011', cat: 'Alltag', ru: 'вода', de: 'Wasser' },
+    { id: 'beg-012', cat: 'Alltag', ru: 'работа', de: 'Arbeit' },
+    { id: 'beg-013', cat: 'Zahlen', ru: 'один', de: 'eins' },
+    { id: 'beg-014', cat: 'Zahlen', ru: 'два', de: 'zwei' },
+    { id: 'beg-015', cat: 'Zahlen', ru: 'три', de: 'drei' },
+    { id: 'beg-016', cat: 'Reise', ru: 'где?', de: 'wo?' },
+    { id: 'beg-017', cat: 'Reise', ru: 'поезд', de: 'Zug' },
+    { id: 'beg-018', cat: 'Zeit', ru: 'сейчас', de: 'jetzt' },
+    { id: 'beg-019', cat: 'Zeit', ru: 'сегодня', de: 'heute' },
+    { id: 'beg-020', cat: 'Familie', ru: 'семья', de: 'Familie' }
+  ],
+  intermediate: [
+    { id: 'int-001', cat: 'Stadtleben', ru: 'площадь', de: 'Platz' },
+    { id: 'int-002', cat: 'Stadtleben', ru: 'переулок', de: 'Gasse' },
+    { id: 'int-003', cat: 'Stadtleben', ru: 'перекрёсток', de: 'Kreuzung' },
+    { id: 'int-004', cat: 'Unterwegs', ru: 'расписание', de: 'Fahrplan' },
+    { id: 'int-005', cat: 'Unterwegs', ru: 'путешествие', de: 'Reise' },
+    { id: 'int-006', cat: 'Unterwegs', ru: 'багаж', de: 'Gepäck' },
+    { id: 'int-007', cat: 'Kulinarik', ru: 'варенье', de: 'Marmelade' },
+    { id: 'int-008', cat: 'Kulinarik', ru: 'пирог', de: 'Pastete' },
+    { id: 'int-009', cat: 'Kulinarik', ru: 'кисель', de: 'Kissel' },
+    { id: 'int-010', cat: 'Gefühle', ru: 'волнение', de: 'Aufregung' },
+    { id: 'int-011', cat: 'Gefühle', ru: 'удивление', de: 'Verwunderung' },
+    { id: 'int-012', cat: 'Gefühle', ru: 'печаль', de: 'Traurigkeit' },
+    { id: 'int-013', cat: 'Natur', ru: 'берёза', de: 'Birke' },
+    { id: 'int-014', cat: 'Natur', ru: 'снегопад', de: 'Schneefall' },
+    { id: 'int-015', cat: 'Natur', ru: 'луга', de: 'Wiesen' },
+    { id: 'int-016', cat: 'Kultur', ru: 'балалайка', de: 'Balalaika' },
+    { id: 'int-017', cat: 'Kultur', ru: 'сказка', de: 'Märchen' },
+    { id: 'int-018', cat: 'Kultur', ru: 'купола', de: 'Zwiebeltürme' }
+  ],
+  advanced: [
+    { id: 'adv-001', cat: 'Literatur', ru: 'наследие', de: 'Erbe' },
+    { id: 'adv-002', cat: 'Literatur', ru: 'повествование', de: 'Erzählung' },
+    { id: 'adv-003', cat: 'Literatur', ru: 'притча', de: 'Parabel' },
+    { id: 'adv-004', cat: 'Philosophie', ru: 'сознание', de: 'Bewusstsein' },
+    { id: 'adv-005', cat: 'Philosophie', ru: 'мышление', de: 'Denken' },
+    { id: 'adv-006', cat: 'Philosophie', ru: 'целостность', de: 'Ganzheit' },
+    { id: 'adv-007', cat: 'Politik', ru: 'достоинство', de: 'Würde' },
+    { id: 'adv-008', cat: 'Politik', ru: 'наследник', de: 'Thronfolger' },
+    { id: 'adv-009', cat: 'Politik', ru: 'постановление', de: 'Verordnung' },
+    { id: 'adv-010', cat: 'Kunst', ru: 'витраж', de: 'Buntglas' },
+    { id: 'adv-011', cat: 'Kunst', ru: 'натюрморт', de: 'Stillleben' },
+    { id: 'adv-012', cat: 'Kunst', ru: 'гравюра', de: 'Kupferstich' },
+    { id: 'adv-013', cat: 'Geschichte', ru: 'древность', de: 'Antike' },
+    { id: 'adv-014', cat: 'Geschichte', ru: 'летописец', de: 'Chronist' },
+    { id: 'adv-015', cat: 'Geschichte', ru: 'княжество', de: 'Fürstentum' },
+    { id: 'adv-016', cat: 'Wissenschaft', ru: 'исследование', de: 'Forschung' },
+    { id: 'adv-017', cat: 'Wissenschaft', ru: 'явление', de: 'Phänomen' },
+    { id: 'adv-018', cat: 'Wissenschaft', ru: 'формула', de: 'Formel' }
+  ]
+};
+
+const ALPHABET = [
+  { ru: 'А а', name: 'A' },
+  { ru: 'Б б', name: 'Be' },
+  { ru: 'В в', name: 'We' },
+  { ru: 'Г г', name: 'Ge' },
+  { ru: 'Д д', name: 'De' },
+  { ru: 'Е е', name: 'Je' },
+  { ru: 'Ё ё', name: 'Jo' },
+  { ru: 'Ж ж', name: 'Sche' },
+  { ru: 'З з', name: 'Se' },
+  { ru: 'И и', name: 'I' },
+  { ru: 'Й й', name: 'Kurzes I' },
+  { ru: 'К к', name: 'Ka' },
+  { ru: 'Л л', name: 'El' },
+  { ru: 'М м', name: 'Em' },
+  { ru: 'Н н', name: 'En' },
+  { ru: 'О о', name: 'O' },
+  { ru: 'П п', name: 'Pe' },
+  { ru: 'Р р', name: 'Er' },
+  { ru: 'С с', name: 'Es' },
+  { ru: 'Т т', name: 'Te' },
+  { ru: 'У у', name: 'U' },
+  { ru: 'Ф ф', name: 'Ef' },
+  { ru: 'Х х', name: 'Cha' },
+  { ru: 'Ц ц', name: 'Zé' },
+  { ru: 'Ч ч', name: 'Tsche' },
+  { ru: 'Ш ш', name: 'Sch' },
+  { ru: 'Щ щ', name: 'Schtsch' },
+  { ru: 'Ъ ъ', name: 'Hartes Zeichen' },
+  { ru: 'Ы ы', name: 'Y' },
+  { ru: 'Ь ь', name: 'Weiches Zeichen' },
+  { ru: 'Э э', name: 'E' },
+  { ru: 'Ю ю', name: 'Ju' },
+  { ru: 'Я я', name: 'Ja' }
+];
+
+const ACHIEVEMENTS = [
+  { id: 'first-word', title: 'Erstes Wort', desc: 'Du hast dein erstes russisches Wort gemeistert!', test: (s) => s.learned.size >= 1 },
+  { id: 'dozen', title: 'Dutzend Worte', desc: 'Zwölf Vokabeln wandern in dein Repertoire.', test: (s) => s.learned.size >= 12 },
+  { id: 'consistent', title: 'Konstanz', desc: 'Halte deinen Streak über mehrere Tage.', test: (s) => s.streak >= 3 },
+  { id: 'accuracy', title: 'Treffsicher', desc: 'Über 80 % deiner Antworten sitzen.', test: (s) => s.answersTotal >= 10 && (s.answersCorrect / s.answersTotal) >= 0.8 }
+];
+
+const $ = (sel, el = document) => el.querySelector(sel);
+const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+
 const state = {
-  dark: false,
+  theme: 'midnight',
+  grade: 'beginner',
+  showLanding: true,
+  useCustomData: false,
+  customDataset: [],
   sfx: true,
   dyslexic: false,
   voice: null,
@@ -14,124 +283,515 @@ const state = {
   mode: 'mc',
   score: 0,
   total: 0,
-  accuracy: 0,
+  answersTotal: 0,
+  answersCorrect: 0,
   streak: 0,
   learned: new Set(),
-  srs: {},          // id: {box: 1..5, due: timestamp}
+  srs: {},
   favs: new Set(),
   hard: new Set(),
   achievements: {},
-  daily: { date: null, done: false },
+  daily: { date: null, done: false }
 };
 
-const STORAGE_KEY = 'ru-vocab-deluxe-v1';
-const load = () => {
+const STORAGE_KEY = 'ru-vocab-deluxe-v2';
+
+function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     const data = JSON.parse(raw);
-    Object.assign(state, data, {
-      learned: new Set(data.learned || []),
-      favs: new Set(data.favs || []),
-      hard: new Set(data.hard || []),
-    });
-  } catch {}
-};
-const save = () => {
-  const toSave = {...state,
+    state.theme = data.theme || state.theme;
+    state.grade = data.grade || state.grade;
+    state.showLanding = data.showLanding ?? state.showLanding;
+    state.useCustomData = data.useCustomData ?? state.useCustomData;
+    state.customDataset = data.customDataset || [];
+    state.sfx = data.sfx ?? state.sfx;
+    state.dyslexic = data.dyslexic ?? state.dyslexic;
+    state.voice = data.voice || null;
+    state.answersTotal = data.answersTotal || 0;
+    state.answersCorrect = data.answersCorrect || 0;
+    state.streak = data.streak || 0;
+    state.learned = new Set(data.learned || []);
+    state.srs = data.srs || {};
+    state.favs = new Set(data.favs || []);
+    state.hard = new Set(data.hard || []);
+    state.achievements = data.achievements || {};
+    state.daily = data.daily || state.daily;
+  } catch (err) {
+    console.warn('Konnte Speicher nicht laden:', err);
+  }
+}
+
+function save() {
+  const toSave = {
+    theme: state.theme,
+    grade: state.grade,
+    showLanding: state.showLanding,
+    useCustomData: state.useCustomData,
+    customDataset: state.customDataset,
+    sfx: state.sfx,
+    dyslexic: state.dyslexic,
+    voice: state.voice,
+    answersTotal: state.answersTotal,
+    answersCorrect: state.answersCorrect,
+    streak: state.streak,
     learned: [...state.learned],
+    srs: state.srs,
     favs: [...state.favs],
     hard: [...state.hard],
+    achievements: state.achievements,
+    daily: state.daily
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-};
+}
 
-function randInt(n){ return Math.floor(Math.random()*n); }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=randInt(i+1); [a[i],a[j]]=[a[j],a[i]];} return a; }
-
-async function init(){
+function init() {
   load();
   bindUI();
+  buildThemeSelectors();
+  buildGradeSelectors();
   themeApply();
-  await loadData();
+  refreshDataset();
   buildCategories();
   buildAlphabetGrid();
   updateStats();
+  unlockAchievements();
+  toggleLanding(state.showLanding);
+  updateAudioIcon();
   registerSW();
   drawChartDummy();
   setupInstall();
   scanVoices();
 }
 
-async function loadData(){
-  const base = await fetch('data/vocab.ru.json').then(r=>r.json());
-  state.dataset = base;
-  state.categories = [...new Set(base.map(x=>x.cat))];
-  // init SRS map
-  for (const item of base){
-    if (!state.srs[item.id]) state.srs[item.id] = {box:1, due: Date.now()};
+function bindUI() {
+  $$('.tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.tab;
+      if (!id) return;
+      $$('.tab').forEach((t) => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', String(t === tab));
+      });
+      $$('.panel').forEach((panel) => panel.classList.remove('visible'));
+      const target = $('#' + id);
+      if (target) target.classList.add('visible');
+    });
+  });
+
+  const startBtn = $('#btn-start');
+  if (startBtn) {
+    startBtn.onclick = () => {
+      state.mode = $('#mode-select').value;
+      if (!state.categories.length) {
+        $('#feedback').textContent = 'Bitte zuerst eine Wortliste wählen.';
+        return;
+      }
+      selectSet();
+      nextCard();
+      toggleLanding(false);
+      state.showLanding = false;
+      save();
+    };
+  }
+
+  const nextBtn = $('#btn-next');
+  if (nextBtn) nextBtn.onclick = () => nextCard();
+
+  const revealBtn = $('#btn-reveal');
+  if (revealBtn) {
+    revealBtn.onclick = () => {
+      const prompt = $('#prompt');
+      if (prompt) {
+        $('#feedback').textContent = 'Lösung: ' + (prompt.dataset.answer || '');
+      }
+    };
+  }
+
+  const sayBtn = $('#btn-say');
+  if (sayBtn) sayBtn.onclick = () => speak($('#prompt')?.textContent ?? '', 'ru-RU');
+
+  const answerInput = $('#answer');
+  if (answerInput) {
+    answerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const current = state.currentSet[state.currentIndex];
+        if (!current) return;
+        checkAnswer($('#answer').value, $('#prompt').dataset.answer, current);
+      }
+    });
+  }
+
+  const practiceActions = $('#practice .actions');
+  if (practiceActions) {
+    practiceActions.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-grade]');
+      if (!btn) return;
+      gradePractice(Number(btn.dataset.grade));
+    });
+  }
+
+  const dueBtn = $('#btn-due');
+  if (dueBtn) dueBtn.onclick = () => startDuePractice();
+
+  const alphaQuiz = $('#btn-alpha-quiz');
+  if (alphaQuiz) alphaQuiz.onclick = () => startAlphabetQuiz();
+
+  const alphaAudio = $('#btn-alpha-audio');
+  if (alphaAudio) {
+    alphaAudio.onclick = () => {
+      const sel = $('.alpha-item.selected');
+      if (sel) speak(sel.dataset.ru, 'ru-RU');
+    };
+  }
+
+  const themeBtn = $('#btn-theme');
+  if (themeBtn) themeBtn.onclick = () => cycleTheme();
+
+  const audioBtn = $('#btn-audio');
+  if (audioBtn) {
+    audioBtn.onclick = () => {
+      state.sfx = !state.sfx;
+      $('#toggle-sfx').checked = state.sfx;
+      updateAudioIcon();
+      save();
+    };
+  }
+
+  const landingEnter = $('#landing-enter');
+  if (landingEnter) {
+    landingEnter.onclick = () => {
+      state.showLanding = false;
+      toggleLanding(false);
+      save();
+    };
+  }
+
+  const toggleSfx = $('#toggle-sfx');
+  if (toggleSfx) {
+    toggleSfx.checked = state.sfx;
+    toggleSfx.onchange = (e) => {
+      state.sfx = e.target.checked;
+      updateAudioIcon();
+      save();
+    };
+  }
+
+  const toggleDys = $('#toggle-dyslexic');
+  if (toggleDys) {
+    toggleDys.checked = state.dyslexic;
+    toggleDys.onchange = (e) => {
+      state.dyslexic = e.target.checked;
+      document.body.classList.toggle('dyslexic', state.dyslexic);
+      save();
+    };
+    document.body.classList.toggle('dyslexic', state.dyslexic);
+  }
+
+  const customToggle = $('#toggle-custom-data');
+  if (customToggle) {
+    customToggle.checked = state.useCustomData;
+    customToggle.onchange = (e) => {
+      state.useCustomData = e.target.checked;
+      updateCustomDataTools();
+      refreshDataset();
+      buildCategories();
+      save();
+    };
+  }
+  updateCustomDataTools();
+
+  const importBtn = $('#btn-import');
+  const exportBtn = $('#btn-export');
+  const fileInput = $('#file-input');
+  if (importBtn && fileInput) {
+    importBtn.onclick = () => fileInput.click();
+    fileInput.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) throw new Error('JSON muss ein Array sein.');
+        state.customDataset = normalizeDataset(data, 'custom');
+        state.useCustomData = true;
+        $('#toggle-custom-data').checked = true;
+        updateCustomDataTools();
+        refreshDataset();
+        buildCategories();
+        save();
+        alert('Import erfolgreich – deine Liste ist aktiv.');
+      } catch (err) {
+        console.error(err);
+        alert('Fehler beim Import: ' + err.message);
+      } finally {
+        fileInput.value = '';
+      }
+    };
+  }
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      const blob = new Blob([JSON.stringify(state.dataset, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'vocab-export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  }
+
+  const voiceScan = $('#btn-voice-scan');
+  if (voiceScan) voiceScan.onclick = () => scanVoices();
+
+  const voiceSelect = $('#voice-select');
+  if (voiceSelect) {
+    voiceSelect.onchange = (e) => {
+      const idx = Number(e.target.value);
+      state.voice = state.voices[idx] || null;
+      save();
+    };
+  }
+
+  const resetBtn = $('#btn-reset');
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      if (confirm('Wirklich alle Daten löschen?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    };
   }
 }
 
-function buildCategories(){
-  const sel = $('#category-select');
-  sel.innerHTML = '';
-  for (const c of state.categories){
+function updateCustomDataTools() {
+  const tools = $('#custom-data-tools');
+  if (!tools) return;
+  tools.classList.toggle('hidden', !state.useCustomData);
+}
+
+function updateAudioIcon() {
+  const useEl = $('#icon-audio-use');
+  if (!useEl) return;
+  useEl.setAttribute('href', state.sfx ? '#icon-audio' : '#icon-audio-off');
+  const audioBtn = $('#btn-audio');
+  if (audioBtn) {
+    audioBtn.setAttribute('aria-label', state.sfx ? 'Soundeffekte stummschalten' : 'Soundeffekte einschalten');
+  }
+}
+
+function buildThemeSelectors() {
+  const containers = [$('#landing-theme-grid'), $('#settings-theme-grid')].filter(Boolean);
+  containers.forEach((container) => {
+    container.innerHTML = '';
+    Object.entries(THEMES).forEach(([key, theme]) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'theme-card';
+      card.dataset.themeId = key;
+      card.style.setProperty('--theme-bg', theme.preview);
+      card.style.setProperty('--theme-overlay', theme.overlay);
+      card.innerHTML = `<strong>${theme.label}</strong><span>${theme.description}</span>`;
+      card.onclick = () => {
+        setTheme(key);
+      };
+      container.appendChild(card);
+    });
+  });
+  highlightActiveTheme();
+}
+
+function highlightActiveTheme() {
+  $$('.theme-card').forEach((card) => {
+    card.classList.toggle('active', card.dataset.themeId === state.theme);
+  });
+}
+
+function setTheme(themeKey) {
+  if (!THEMES[themeKey]) return;
+  state.theme = themeKey;
+  themeApply();
+  highlightActiveTheme();
+  save();
+}
+
+function cycleTheme() {
+  const keys = Object.keys(THEMES);
+  const idx = keys.indexOf(state.theme);
+  const next = keys[(idx + 1) % keys.length];
+  setTheme(next);
+}
+
+function themeApply() {
+  const theme = THEMES[state.theme] || THEMES.midnight;
+  Object.entries(theme.vars).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value);
+  });
+  document.body.dataset.theme = state.theme;
+  document.body.classList.toggle('dyslexic', state.dyslexic);
+}
+
+function buildGradeSelectors() {
+  const containers = [$('#landing-grade-grid'), $('#settings-grade-grid')].filter(Boolean);
+  containers.forEach((container) => {
+    container.innerHTML = '';
+    Object.entries(GRADE_INFO).forEach(([key, info]) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'grade-card';
+      card.dataset.grade = key;
+      const ribbon = key === 'beginner'
+        ? 'radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3), transparent 65%)'
+        : key === 'intermediate'
+          ? 'radial-gradient(circle at 70% 40%, rgba(170,140,255,0.35), transparent 60%)'
+          : 'radial-gradient(circle at 20% 40%, rgba(255,200,120,0.38), transparent 65%)';
+      card.style.setProperty('--grade-ribbon', ribbon);
+      card.innerHTML = `<strong>${info.label}</strong><span>${info.description}</span>`;
+      card.onclick = () => setGrade(key);
+      container.appendChild(card);
+    });
+  });
+  highlightGrade();
+}
+
+function highlightGrade() {
+  $$('.grade-card').forEach((card) => {
+    card.classList.toggle('active', card.dataset.grade === state.grade);
+  });
+}
+
+function setGrade(grade) {
+  if (!GRADE_INFO[grade]) return;
+  state.grade = grade;
+  highlightGrade();
+  if (!state.useCustomData) {
+    refreshDataset();
+    buildCategories();
+  }
+  save();
+}
+
+function toggleLanding(show) {
+  const landing = $('#landing');
+  if (!landing) return;
+  landing.classList.toggle('visible', show);
+  landing.setAttribute('aria-hidden', String(!show));
+  document.body.classList.toggle('no-scroll', show);
+}
+
+function normalizeDataset(list, prefix) {
+  return list.map((item, idx) => ({
+    id: item.id || `${prefix}-${idx}`,
+    cat: item.cat || 'Allgemein',
+    ru: item.ru,
+    de: item.de
+  })).filter((item) => item.ru && item.de);
+}
+
+function refreshDataset() {
+  const source = state.useCustomData && state.customDataset.length
+    ? state.customDataset
+    : BUILT_IN_WORDS[state.grade] || [];
+  state.dataset = normalizeDataset(source, state.useCustomData ? 'custom' : state.grade);
+  state.categories = [...new Set(state.dataset.map((item) => item.cat))];
+  ensureSrsIntegrity();
+}
+
+function ensureSrsIntegrity() {
+  const valid = new Set(state.dataset.map((item) => item.id));
+  Object.keys(state.srs).forEach((id) => {
+    if (!valid.has(id)) delete state.srs[id];
+  });
+  state.dataset.forEach((item) => {
+    if (!state.srs[item.id]) state.srs[item.id] = { box: 1, due: Date.now() };
+  });
+}
+
+function buildCategories() {
+  const select = $('#category-select');
+  if (!select) return;
+  select.innerHTML = '';
+  if (!state.categories.length) {
     const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    sel.appendChild(opt);
+    opt.textContent = 'Keine Vokabeln verfügbar';
+    opt.value = '';
+    select.appendChild(opt);
+    return;
   }
+  state.categories.forEach((cat) => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
+  });
 }
 
-function selectSet(){
-  const cat = $('#category-select').value;
-  const arr = state.dataset.filter(x=>x.cat===cat);
+function selectSet() {
+  const select = $('#category-select');
+  const cat = select?.value || state.categories[0];
+  const arr = state.dataset.filter((item) => item.cat === cat);
   state.currentSet = shuffle(arr.slice());
   state.currentIndex = 0;
-  state.score = 0; state.total = state.currentSet.length;
+  state.score = 0;
+  state.total = state.currentSet.length;
   $('#bar').style.width = '0%';
 }
 
-function nextCard(){
+function nextCard() {
   const item = state.currentSet[state.currentIndex];
-  if (!item) { endSession(); return; }
+  if (!item) {
+    endSession();
+    return;
+  }
   $('#feedback').textContent = '';
   $('#answer').value = '';
   $('#choices').innerHTML = '';
   const mode = state.mode;
-  const promptSide = Math.random() < 0.5 ? 'ru' : 'de';
-  $('#prompt').textContent = promptSide==='ru' ? item.ru : item.de;
-  $('#prompt').dataset.answer = promptSide==='ru' ? item.de : item.ru;
-  if (mode === 'mc'){
-    const pool = shuffle(state.dataset.filter(x=>x.id!==item.id)).slice(0,3).map(x => promptSide==='ru' ? x.de : x.ru);
+  const promptSide = mode === 'audio' ? 'ru' : (Math.random() < 0.5 ? 'ru' : 'de');
+  const promptText = promptSide === 'ru' ? item.ru : item.de;
+  $('#prompt').textContent = promptText;
+  $('#prompt').dataset.answer = promptSide === 'ru' ? item.de : item.ru;
+
+  if (mode === 'mc') {
+    const pool = shuffle(state.dataset.filter((x) => x.id !== item.id)).slice(0, 3)
+      .map((x) => (promptSide === 'ru' ? x.de : x.ru));
     const correct = $('#prompt').dataset.answer;
     const opts = shuffle([...pool, correct]);
-    for (const txt of opts){
-      const b = document.createElement('button');
-      b.className = 'choice-btn';
-      b.textContent = txt;
-      b.onclick = () => checkAnswer(txt, correct, item);
-      $('#choices').appendChild(b);
-    }
+    opts.forEach((txt) => {
+      const button = document.createElement('button');
+      button.className = 'choice-btn';
+      button.type = 'button';
+      button.textContent = txt;
+      button.onclick = () => checkAnswer(txt, correct, item);
+      $('#choices').appendChild(button);
+    });
     $('#answer').style.display = 'none';
     $('#choices').style.display = 'grid';
   } else {
     $('#answer').style.display = 'block';
     $('#choices').style.display = 'none';
     $('#answer').focus();
+    if (mode === 'audio') {
+      speak(item.ru, 'ru-RU');
+      $('#prompt').textContent = '🔈 Höre zu und tippe die Übersetzung';
+    }
   }
-  $('#progress #bar').style.width = `${Math.round((state.currentIndex)/state.total*100)}%`;
+  const progress = state.total ? Math.round((state.currentIndex) / state.total * 100) : 0;
+  $('#bar').style.width = `${progress}%`;
 }
 
-function checkAnswer(given, correct, item){
-  const ok = given.trim().toLowerCase() === correct.trim().toLowerCase();
+function checkAnswer(given, correct, item) {
+  const normalized = (str) => str.trim().toLowerCase();
+  const ok = normalized(given) === normalized(correct);
   feedback(ok, correct);
   updateStatsAfterAnswer(ok, item);
 }
 
-function feedback(ok, correct){
+function feedback(ok, correct) {
   const el = $('#feedback');
-  if (ok){
+  if (!el) return;
+  if (ok) {
     el.textContent = 'Richtig!';
     confetti();
     ping(true);
@@ -141,47 +801,51 @@ function feedback(ok, correct){
   }
 }
 
-function updateStatsAfterAnswer(ok, item){
-  state.accuracy = Math.round(((state.accuracy*state.learned.size) + (ok?1:0)) / (state.learned.size+1) * 100);
-  state.learned.add(item.id);
-  if (ok){
+function updateStatsAfterAnswer(ok, item) {
+  state.answersTotal += 1;
+  if (ok) {
+    state.answersCorrect += 1;
     promoteSRS(item.id);
+    state.learned.add(item.id);
     unlockAchievements();
   } else {
     demoteSRS(item.id);
   }
-  state.currentIndex++;
-  $('#bar').style.width = `${Math.round((state.currentIndex)/state.total*100)}%`;
+  state.currentIndex += 1;
+  const progress = state.total ? Math.round((state.currentIndex) / state.total * 100) : 0;
+  $('#bar').style.width = `${progress}%`;
   save();
+  updateStats();
 }
 
-function endSession(){
-  $('#feedback').textContent = 'Session beendet.';
+function endSession() {
+  $('#feedback').textContent = 'Session beendet. Großartig gemacht!';
 }
 
-function promoteSRS(id){
-  const s = state.srs[id] || {box:1, due:Date.now()};
-  s.box = Math.min(5, s.box+1);
-  const days = [0,1,2,4,7,14][s.box];
-  s.due = Date.now() + days*24*3600*1000;
-  state.srs[id] = s;
-}
-function demoteSRS(id){
-  const s = state.srs[id] || {box:1, due:Date.now()};
-  s.box = Math.max(1, s.box-1);
-  s.due = Date.now() + 12*3600*1000;
-  state.srs[id] = s;
+function promoteSRS(id) {
+  const entry = state.srs[id] || { box: 1, due: Date.now() };
+  entry.box = Math.min(5, entry.box + 1);
+  const days = [0, 1, 2, 4, 7, 14][entry.box];
+  entry.due = Date.now() + days * 24 * 3600 * 1000;
+  state.srs[id] = entry;
 }
 
-function srsDueSet(){
+function demoteSRS(id) {
+  const entry = state.srs[id] || { box: 1, due: Date.now() };
+  entry.box = Math.max(1, entry.box - 1);
+  entry.due = Date.now() + 12 * 3600 * 1000;
+  state.srs[id] = entry;
+}
+
+function srsDueSet() {
   const now = Date.now();
-  return state.dataset.filter(x => (state.srs[x.id]?.due ?? 0) <= now);
+  return state.dataset.filter((item) => (state.srs[item.id]?.due ?? 0) <= now);
 }
 
-function startDuePractice(){
+function startDuePractice() {
   const due = srsDueSet();
-  if (!due.length){
-    $('#practice-feedback').textContent = 'Heute nichts fällig. Luxus.';
+  if (!due.length) {
+    $('#practice-feedback').textContent = 'Heute nichts fällig. Genieße deine freie Zeit!';
     return;
   }
   state.currentSet = shuffle(due);
@@ -189,113 +853,78 @@ function startDuePractice(){
   nextPractice();
 }
 
-function nextPractice(){
+function nextPractice() {
   const item = state.currentSet[state.currentIndex];
-  if (!item){ $('#practice-feedback').textContent = 'Fertig.'; return; }
-  $('#practice-answer').value='';
-  $('#practice-prompt').textContent = Math.random()<0.5 ? item.ru : item.de;
-  $('#practice-prompt').dataset.answer = $('#practice-prompt').textContent===item.ru ? item.de : item.ru;
+  if (!item) {
+    $('#practice-feedback').textContent = 'Fertig. Gut gemacht!';
+    return;
+  }
+  $('#practice-answer').value = '';
+  const showRussian = Math.random() < 0.5;
+  $('#practice-prompt').textContent = showRussian ? item.ru : item.de;
+  $('#practice-prompt').dataset.answer = showRussian ? item.de : item.ru;
 }
 
-function gradePractice(grade){
+function gradePractice(grade) {
   const item = state.currentSet[state.currentIndex];
+  if (!item) return;
   const given = $('#practice-answer').value.trim().toLowerCase();
   const correct = $('#practice-prompt').dataset.answer.trim().toLowerCase();
   const ok = given === correct || grade >= 5;
-  if (ok) promoteSRS(item.id); else demoteSRS(item.id);
-  $('#practice-feedback').textContent = ok ? 'Gut!' : `Nope. Richtig: ${correct}`;
-  state.currentIndex++;
+  if (ok) {
+    promoteSRS(item.id);
+    state.answersCorrect += 1;
+    state.learned.add(item.id);
+  } else {
+    demoteSRS(item.id);
+  }
+  state.answersTotal += 1;
+  $('#practice-feedback').textContent = ok ? 'Sehr gut!' : `Richtig wäre: ${correct}`;
+  state.currentIndex += 1;
   save();
+  updateStats();
   nextPractice();
 }
 
-/* UI Binds */
-function bindUI(){
-  $$('.tab').forEach(b => b.addEventListener('click', () => {
-    $$('.tab').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const id = b.dataset.tab;
-    $$('.panel').forEach(p => p.classList.remove('visible'));
-    $('#'+id).classList.add('visible');
-  }));
-  $('#btn-dark').onclick = () => { state.dark = !state.dark; themeApply(); save(); };
-  $('#toggle-dark').onchange = e => { state.dark = e.target.checked; themeApply(); save(); };
-  $('#toggle-sfx').onchange = e => { state.sfx = e.target.checked; save(); };
-  $('#toggle-dyslexic').onchange = e => { state.dyslexic = e.target.checked; document.body.classList.toggle('dyslexic', state.dyslexic); save(); };
+function updateStats() {
+  $('#stat-learned').textContent = state.learned.size;
+  const accuracy = state.answersTotal ? Math.round((state.answersCorrect / state.answersTotal) * 100) : 100;
+  $('#stat-accuracy').textContent = `${accuracy}%`;
+  $('#stat-due').textContent = srsDueSet().length;
+  $('#stat-streak').textContent = state.streak;
+  $('#version').textContent = 'v2.0.0';
+  unlockAchievements();
+}
 
-  $('#btn-start').onclick = () => { state.mode = $('#mode-select').value; selectSet(); nextCard(); };
-  $('#btn-next').onclick = () => nextCard();
-  $('#btn-reveal').onclick = () => { $('#feedback').textContent = 'Lösung: ' + $('#prompt').dataset.answer; };
-  $('#btn-say').onclick = () => speak($('#prompt').textContent, 'ru-RU');
-  $('#answer').addEventListener('keydown', e => { if (e.key==='Enter') checkAnswer($('#answer').value, $('#prompt').dataset.answer, state.currentSet[state.currentIndex]); });
-
-  $('#btn-alpha-quiz').onclick = () => startAlphabetQuiz();
-  $('#btn-alpha-audio').onclick = () => {
-    const sel = $('.alpha-item.selected'); if (sel) speak(sel.dataset.ru, 'ru-RU');
-  };
-
-  $('#btn-due').onclick = () => startDuePractice();
-  $('#practice .actions').addEventListener('click', e => {
-    const g = e.target.dataset.grade; if (!g) return;
-    gradePractice(Number(g));
+function unlockAchievements() {
+  const container = $('#achievements');
+  if (!container) return;
+  ACHIEVEMENTS.forEach((ach) => {
+    if (ach.test(state)) {
+      state.achievements[ach.id] = state.achievements[ach.id] || Date.now();
+    }
   });
-
-  $('#btn-import').onclick = () => $('#file-input').click();
-  $('#file-input').onchange = async (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const text = await file.text();
-    try {
-      const data = JSON.parse(text);
-      if (!Array.isArray(data)) throw new Error('JSON muss ein Array sein.');
-      state.dataset = data;
-      state.categories = [...new Set(data.map(x=>x.cat))];
-      buildCategories();
-      save();
-      alert('Import erfolgreich.');
-    } catch(err){
-      alert('Fehler beim Import: '+err.message);
-    }
-  };
-  $('#btn-export').onclick = () => {
-    const blob = new Blob([JSON.stringify(state.dataset, null, 2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'vocab-export.json'; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  $('#btn-voice-scan').onclick = scanVoices;
-  $('#voice-select').onchange = e => {
-    const idx = Number(e.target.value);
-    state.voice = state.voices[idx] || null; save();
-  };
-
-  $('#btn-reset').onclick = () => {
-    if (confirm('Wirklich alles löschen?')){
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    }
-  };
+  container.innerHTML = '';
+  ACHIEVEMENTS.forEach((ach) => {
+    const unlocked = Boolean(state.achievements[ach.id]);
+    const card = document.createElement('div');
+    card.className = 'achievement' + (unlocked ? ' unlocked' : '');
+    card.innerHTML = `<strong>${ach.title}</strong><p>${ach.desc}</p>`;
+    container.appendChild(card);
+  });
 }
 
-/* Theme */
-function themeApply(){
-  document.body.classList.toggle('light', !state.dark);
-  document.body.classList.toggle('dark', state.dark);
-  $('#toggle-dark').checked = state.dark;
-}
-
-/* Alphabet */
-async function buildAlphabetGrid(){
-  const alpha = await fetch('data/alphabet.ru.json').then(r=>r.json());
-  const grid = $('#alphabet-grid'); grid.innerHTML = '';
-  alpha.forEach(ch => {
+function buildAlphabetGrid() {
+  const grid = $('#alphabet-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  ALPHABET.forEach((ch) => {
     const div = document.createElement('div');
     div.className = 'alpha-item';
     div.dataset.ru = ch.ru;
     div.innerHTML = `<strong lang="ru">${ch.ru}</strong><small>${ch.name}</small>`;
     div.onclick = () => {
-      $$('.alpha-item').forEach(x=>x.classList.remove('selected'));
+      $$('.alpha-item').forEach((x) => x.classList.remove('selected'));
       div.classList.add('selected');
       speak(ch.ru, 'ru-RU');
     };
@@ -303,115 +932,143 @@ async function buildAlphabetGrid(){
   });
 }
 
-function startAlphabetQuiz(){
+function startAlphabetQuiz() {
   const items = $$('.alpha-item');
   if (!items.length) return;
-  const idx = Math.floor(Math.random()*items.length);
+  const idx = Math.floor(Math.random() * items.length);
   items[idx].click();
 }
 
-/* Audio TTS + simple SFX */
-function scanVoices(){
+function scanVoices() {
   const voices = speechSynthesis.getVoices();
-  if (!voices.length){
+  if (!voices.length) {
     speechSynthesis.onvoiceschanged = scanVoices;
     return;
   }
-  state.voices = voices.filter(v => v.lang.toLowerCase().startsWith('ru'));
-  const sel = $('#voice-select');
-  sel.innerHTML = '';
-  state.voices.forEach((v, i) => {
+  state.voices = voices.filter((voice) => voice.lang.toLowerCase().startsWith('ru'));
+  const select = $('#voice-select');
+  if (!select) return;
+  select.innerHTML = '';
+  state.voices.forEach((voice, index) => {
     const opt = document.createElement('option');
-    opt.value = String(i); opt.textContent = `${v.name} (${v.lang})`;
-    sel.appendChild(opt);
+    opt.value = String(index);
+    opt.textContent = `${voice.name} (${voice.lang})`;
+    select.appendChild(opt);
   });
-  if (state.voice){
-    const idx = state.voices.findIndex(v => v.name === state.voice.name);
-    sel.value = String(idx);
+  if (state.voice) {
+    const idx = state.voices.findIndex((v) => v.name === state.voice.name);
+    if (idx >= 0) select.value = String(idx);
   }
 }
 
-function speak(text, lang='ru-RU'){
+function speak(text, lang = 'ru-RU') {
   if (!text) return;
-  const u = new SpeechSynthesisUtterance(text);
-  if (state.voice) u.voice = state.voice;
-  u.lang = lang;
-  speechSynthesis.speak(u);
+  const utterance = new SpeechSynthesisUtterance(text);
+  if (state.voice) utterance.voice = state.voice;
+  utterance.lang = lang;
+  speechSynthesis.speak(utterance);
 }
 
-function ping(ok){
+function ping(ok) {
   if (!state.sfx) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = ok ? 'triangle' : 'sawtooth';
-    o.frequency.value = ok ? 660 : 220;
-    g.gain.value = 0.0001;
-    o.connect(g); g.connect(ctx.destination);
-    o.start();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = ok ? 'triangle' : 'sawtooth';
+    osc.frequency.value = ok ? 720 : 240;
+    gain.gain.value = 0.0001;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
     const t = ctx.currentTime;
-    g.gain.exponentialRampToValueAtTime(0.05, t+0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+0.25);
-    o.stop(t+0.26);
-  } catch {}
-}
-
-/* Confetti (tiny) */
-function confetti(){
-  const n = 20;
-  for (let i=0;i<n;i++){
-    const s = document.createElement('span');
-    s.textContent = '•';
-    s.style.position='fixed';
-    s.style.left = Math.random()*100+'vw';
-    s.style.top = '10px';
-    s.style.fontSize = (8+Math.random()*16)+'px';
-    s.style.opacity = '0.9';
-    s.style.pointerEvents='none';
-    s.style.transition='transform 0.9s ease, opacity 0.9s ease';
-    document.body.appendChild(s);
-    requestAnimationFrame(()=>{
-      s.style.transform = `translateY(${60+Math.random()*120}vh) rotate(${Math.random()*360}deg)`;
-      s.style.opacity = '0';
-    });
-    setTimeout(()=>s.remove(), 1000);
+    gain.gain.exponentialRampToValueAtTime(0.05, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+    osc.stop(t + 0.26);
+  } catch (err) {
+    console.warn('Audio konnte nicht abgespielt werden:', err);
   }
 }
 
-/* Simple chart without libs */
-function drawChartDummy(){
-  const can = $('#chart-dummy');
-  const ctx = can.getContext('2d');
-  ctx.clearRect(0,0,can.width,can.height);
+function confetti() {
+  const n = 22;
+  for (let i = 0; i < n; i += 1) {
+    const piece = document.createElement('span');
+    piece.style.position = 'fixed';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.top = '10px';
+    piece.style.width = `${4 + Math.random() * 6}px`;
+    piece.style.height = `${10 + Math.random() * 14}px`;
+    piece.style.borderRadius = '2px';
+    piece.style.background = `linear-gradient(${Math.random() * 180}deg, hsla(${Math.random() * 360}, 75%, 65%, 0.9), hsla(${Math.random() * 360}, 85%, 55%, 0.9))`;
+    piece.style.pointerEvents = 'none';
+    piece.style.opacity = '0.9';
+    piece.style.transition = 'transform 1s ease, opacity 1s ease';
+    document.body.appendChild(piece);
+    requestAnimationFrame(() => {
+      piece.style.transform = `translateY(${60 + Math.random() * 120}vh) rotate(${Math.random() * 360}deg)`;
+      piece.style.opacity = '0';
+    });
+    setTimeout(() => piece.remove(), 1100);
+  }
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function drawChartDummy() {
+  const canvas = $('#chart-dummy');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.lineWidth = 2;
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, 'rgba(255,255,255,0.35)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0.05)');
+  ctx.fillStyle = gradient;
+  const baseY = canvas.height - 40;
   ctx.beginPath();
-  const pts = [...Array(14)].map((_,i)=>({x: i*(can.width/13), y: 20 + Math.sin(i/2)*20 + 100 + Math.random()*20}));
-  ctx.moveTo(pts[0].x, pts[0].y);
-  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  const points = [...Array(14)].map((_, i) => ({ x: i * (canvas.width / 13), y: baseY - Math.sin(i / 2) * 30 - Math.random() * 25 }));
+  ctx.moveTo(points[0].x, canvas.height);
+  points.forEach((p) => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, canvas.height);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  points.forEach((p) => ctx.lineTo(p.x, p.y));
   ctx.stroke();
 }
 
-/* Install (PWA) */
-function registerSW(){
-  if ('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js');
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW Registrierung fehlgeschlagen', err));
   }
 }
-let deferredPrompt=null;
-function setupInstall(){
-  window.addEventListener('beforeinstallprompt', (e)=>{
-    e.preventDefault();
-    deferredPrompt = e;
-    $('#btn-install').style.display = 'inline-block';
+
+let deferredPrompt = null;
+function setupInstall() {
+  const installBtn = $('#btn-install');
+  if (installBtn) installBtn.style.display = 'none';
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    $('#btn-install').style.display = 'inline-flex';
   });
-  $('#btn-install').onclick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-  };
+  if (installBtn) {
+    installBtn.onclick = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    };
+  }
 }
 
-/* Start */
 window.addEventListener('load', init);
