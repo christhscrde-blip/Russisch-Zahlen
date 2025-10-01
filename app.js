@@ -509,6 +509,8 @@ const CATEGORY_ART = {
   }
 };
 
+const CYRILLIC_PATTERN = /[\u0400-\u04FF]/;
+
 const BUILT_IN_WORDS = {
   grade7: [
     { id: 'g7-001', cat: 'Freunde treffen', ru: 'Привет, давай встретимся у метро в пять часов.', de: 'Hallo, lass uns um fünf Uhr an der U-Bahn treffen.' },
@@ -1327,8 +1329,35 @@ function nextCard() {
       const button = document.createElement('button');
       button.className = 'choice-btn';
       button.type = 'button';
-      button.textContent = txt;
-      button.onclick = () => checkAnswer(txt, correct, item);
+
+      const label = document.createElement('span');
+      label.className = 'choice-label';
+      label.textContent = txt;
+      button.appendChild(label);
+
+      if (CYRILLIC_PATTERN.test(txt)) {
+        button.classList.add('has-audio');
+        button.dataset.ru = txt;
+        const audio = document.createElement('span');
+        audio.className = 'choice-audio';
+        audio.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-volume"></use></svg>';
+        const sr = document.createElement('span');
+        sr.className = 'sr-only';
+        sr.textContent = 'Russischen Satz anhören';
+        audio.appendChild(sr);
+        button.appendChild(audio);
+      }
+
+      button.addEventListener('click', (e) => {
+        if (button.classList.contains('has-audio') && e.target.closest('.choice-audio')) {
+          speak(button.dataset.ru, 'ru-RU');
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        checkAnswer(txt, correct, item);
+      });
+
       $('#choices').appendChild(button);
     });
     $('#answer').style.display = 'none';
@@ -1536,6 +1565,11 @@ function speak(text, lang = 'ru-RU') {
   const utterance = new SpeechSynthesisUtterance(text);
   if (state.voice) utterance.voice = state.voice;
   utterance.lang = lang;
+  try {
+    speechSynthesis.cancel();
+  } catch (err) {
+    console.warn('Konnte laufende Sprachausgabe nicht stoppen:', err);
+  }
   speechSynthesis.speak(utterance);
 }
 
