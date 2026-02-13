@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f1f1f">
+  <link rel="manifest" href="manifest.json">
+  <title>Russisch Vokabel-App Deluxe</title>
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preload" href="style.css" as="style">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Russisch Vokabel-App Deluxe</h1>
+    <div class="header-actions">
+      <button id="btn-dark" class="ghost" aria-label="Theme umschalten">🌓</button>
+      <button id="btn-audio" class="ghost" aria-label="Audio umschalten">🔊</button>
+      <button id="btn-install" class="primary" aria-label="App installieren">Installieren</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Hauptnavigation">
+    <button class="tab active" data-tab="learn" role="tab" aria-selected="true">Lernen</button>
+    <button class="tab" data-tab="alphabet" role="tab" aria-selected="false">Alphabet</button>
+    <button class="tab" data-tab="practice" role="tab" aria-selected="false">Üben</button>
+    <button class="tab" data-tab="stats" role="tab" aria-selected="false">Statistik</button>
+    <button class="tab" data-tab="settings" role="tab" aria-selected="false">Einstellungen</button>
+  </nav>
+
+  <main>
+    <section id="learn" class="panel visible">
+      <div class="toolbar">
+        <select id="category-select"></select>
+        <select id="mode-select">
+          <option value="mc">Multiple Choice</option>
+          <option value="type">Eintippen</option>
+          <option value="audio">Hören → Tippen</option>
+        </select>
+        <button id="btn-start" class="primary">Start</button>
+      </div>
+      <div id="card" class="card">
+        <div id="prompt" class="prompt"></div>
+        <input id="answer" class="answer" type="text" inputmode="latin-name" placeholder="Antwort hier...">
+        <div id="choices" class="choices"></div>
+        <div class="actions">
+          <button id="btn-reveal" class="ghost">Lösung zeigen</button>
+          <button id="btn-say" class="ghost">Vorlesen</button>
+          <button id="btn-next" class="primary">Weiter</button>
+        </div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+      </div>
+      <div id="progress" class="progress"><div id="bar"></div></div>
+    </section>
+
+    <section id="alphabet" class="panel">
+      <div class="toolbar">
+        <button id="btn-alpha-quiz" class="primary">Alphabet-Quiz starten</button>
+        <button id="btn-alpha-audio" class="ghost">Buchstabe vorlesen</button>
+      </div>
+      <div id="alphabet-grid" class="grid"></div>
+    </section>
+
+    <section id="practice" class="panel">
+      <div class="toolbar">
+        <button id="btn-due" class="primary">Fällige Wiederholungen</button>
+        <button id="btn-hard" class="ghost">Schwer markieren</button>
+        <button id="btn-fav" class="ghost">Zu Favoriten</button>
+      </div>
+      <div id="practice-card" class="card compact">
+        <div id="practice-prompt" class="prompt"></div>
+        <input id="practice-answer" class="answer" type="text" placeholder="Antwort...">
+        <div class="actions">
+          <button data-grade="0" class="outline">Falsch</button>
+          <button data-grade="3" class="outline">So lala</button>
+          <button data-grade="5" class="primary">Richtig</button>
+        </div>
+        <div id="practice-feedback" class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="stats" class="panel">
+      <div class="stats-grid">
+        <div class="stat"><span id="stat-learned">0</span><label>Wörter gelernt</label></div>
+        <div class="stat"><span id="stat-streak">0</span><label>Tages-Streak</label></div>
+        <div class="stat"><span id="stat-accuracy">0%</span><label>Genauigkeit</label></div>
+        <div class="stat"><span id="stat-due">0</span><label>Heute fällig</label></div>
+      </div>
+      <div id="achievements" class="achievements"></div>
+      <canvas id="chart-dummy" width="600" height="200" aria-label="Lernverlauf"></canvas>
+    </section>
+
+    <section id="settings" class="panel">
+      <h2>Einstellungen</h2>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-dark">
+        <span>Dark Mode</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-sfx" checked>
+        <span>Soundeffekte</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-dyslexic">
+        <span>Lesefreundliche Schrift</span>
+      </label>
+
+      <div class="group">
+        <h3>Vokabeln</h3>
+        <button id="btn-import" class="outline">Import JSON</button>
+        <button id="btn-export" class="outline">Export JSON</button>
+        <input type="file" id="file-input" accept="application/json" hidden>
+      </div>
+
+      <div class="group">
+        <h3>Audio</h3>
+        <button id="btn-voice-scan" class="outline">Russische Stimmen suchen</button>
+        <select id="voice-select"></select>
+        <small>Nutze Text-To-Speech des Browsers. Falls keine russische Stimme vorhanden ist, wird eine neutrale genutzt.</small>
+      </div>
+
+      <div class="group">
+        <h3>Zurücksetzen</h3>
+        <button id="btn-reset" class="danger">Alle Daten löschen</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>© 2025 Vokabel-App Deluxe</span>
+    <span id="version">v1.0.0</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
